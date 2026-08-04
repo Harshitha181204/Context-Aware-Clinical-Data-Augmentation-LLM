@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Records | Clinical System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f7fa;
+        }
+
+        /* ================= NAVBAR ================= */
+        .navbar {
+            background: #2c5364;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .navbar h2 {
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ================= CONTAINER ================= */
+        .container {
+            padding: 40px 60px;
+        }
+
+        /* ================= TABLE ================= */
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #2c5364;
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+            text-align: center;
+            color: #333;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f0f4f8;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        /* ================= ACTION BUTTONS ================= */
+        .btn {
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            color: white;
+            margin: 2px;
+            display: inline-block;
+            transition: 0.2s ease;
+        }
+
+        .visit-btn {
+            background: #3498db;
+        }
+
+        .visit-btn:hover {
+            background: #2d7dbb;
+        }
+
+        .augment-btn {
+            background: #27ae60;
+        }
+
+        .augment-btn:hover {
+            background: #1f8c4d;
+        }
+
+        .view-btn {
+            background: #8e44ad;
+        }
+
+        .view-btn:hover {
+            background: #6d3485;
+        }
+
+        /* ================= BADGES ================= */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .low { background: #27ae60; }
+        .moderate { background: #f39c12; }
+        .high { background: #e74c3c; }
+
+        /* ================= EMPTY STATE ================= */
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            color: #777;
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media(max-width: 900px){
+            .container {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2><i class="fa-solid fa-users"></i> Patient Records</h2>
+    <a href="{% url 'home' %}"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+</div>
+
+<div class="container">
+
+    {% if patients %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient Code</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Total Visits</th>
+                    <th>Last Visit</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.patient_code }}</td>
+                    <td>{{ patient.full_name }}</td>
+                    <td>{{ patient.age }}</td>
+                    <td>{{ patient.gender }}</td>
+
+                    <td>{{ patient.records.count }}</td>
+
+                    <td>
+                        {% with last_visit=patient.records.last %}
+                            {% if last_visit %}
+                                {{ last_visit.visit_date|date:"Y-m-d H:i" }}
+                            {% else %}
+                                <span style="color:#999;">No Visits</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+
+                    <td>
+
+                        <!-- Add Medical Record -->
+                        <a href="{% url 'add_medical_record' patient.id %}" class="btn visit-btn">
+                            <i class="fa-solid fa-notes-medical"></i>
+                        </a>
+                    
+                        <!-- Augment Button -->
+                        {% if patient.has_record %}
+                            <a href="{% url 'augment_patient' patient.id %}" class="btn augment-btn">
+                                <i class="fa-solid fa-brain"></i>
+                            </a>
+                        {% else %}
+                            <span class="btn augment-btn" style="background:#ccc; cursor:not-allowed;" title="Add medical record first">
+                                <i class="fa-solid fa-brain"></i>
+                            </span>
+                        {% endif %}
+                    
+                        <!-- View -->
+                        <a href="#" class="btn view-btn">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+        <div class="no-data">
+            <h3><i class="fa-solid fa-database"></i> No patient records found.</h3>
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

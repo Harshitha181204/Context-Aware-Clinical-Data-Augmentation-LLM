@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register | Clinical AI System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --primary: #00c6ff;
+        --secondary: #0072ff;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: white;
+        transition: 0.4s;
+      }
+
+      body.light {
+        background: linear-gradient(135deg, #e0f7ff, #ffffff);
+        color: #333;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 750px;
+        padding: 50px;
+        border-radius: 20px;
+        backdrop-filter: blur(18px);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        position: relative;
+      }
+
+      body.light .container {
+        background: white;
+      }
+
+      .toggle-mode {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        cursor: pointer;
+        font-size: 18px;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        text-align: center;
+        font-size: 14px;
+        opacity: 0.7;
+        margin-bottom: 35px;
+      }
+
+      /* Grid Layout */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .input-group label {
+        font-size: 13px;
+        margin-bottom: 6px;
+        opacity: 0.8;
+      }
+
+      .input-group input,
+      .input-group select {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: transparent;
+        color: inherit;
+        outline: none;
+        transition: 0.3s;
+      }
+
+      body.light .input-group input,
+      body.light .input-group select {
+        border: 1px solid #ccc;
+      }
+
+      .input-group input:focus,
+      .input-group select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 8px rgba(0, 198, 255, 0.5);
+      }
+
+      .btn-register {
+        margin-top: 30px;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 114, 255, 0.6);
+      }
+
+      .errorlist {
+        color: #ff6b6b;
+        font-size: 12px;
+        margin-top: 5px;
+      }
+
+      .login-link {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+      }
+
+      .login-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 12px;
+        opacity: 0.7;
+      }
+
+      /* Mobile */
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .container {
+          padding: 30px;
+          margin: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="toggle-mode" onclick="toggleMode()">
+        <i class="fa-solid fa-moon"></i>
+      </div>
+
+      <h2>Create Clinical Account</h2>
+      <p class="subtitle">Register as Doctor / Staff</p>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-grid">
+          {% for field in form %}
+          <div
+            class="input-group {% if field.name == 'hospital_name' or field.name == 'specialization' %}full-width{% endif %}"
+          >
+            <label>{{ field.label }}</label>
+            {{ field }} {% if field.errors %}
+            <div class="errorlist">{{ field.errors }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        <button type="submit" class="btn-register">Register</button>
+      </form>
+
+      <div class="login-link">
+        Already have an account?
+        <a href="{% url 'login' %}">Login</a>
+      </div>
+
+      <div class="footer">© 2026 Clinical AI System</div>
+    </div>
+
+    <script>
+      function toggleMode() {
+        document.body.classList.toggle("light");
+      }
+    </script>
+  </body>
+</html>
